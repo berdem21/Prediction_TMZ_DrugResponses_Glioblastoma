@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+# Veriyi DataFrame olarak oluştur
+data = {
+    "SAAT": ["24H","24H","24H","24H","48H","48H","48H","48H",
+             "24H","24H","24H","24H","48H","48H","48H","48H"],
+    "GRUP": ["CTRL","CTRL","CTRL","CTRL","CTRL","CTRL","CTRL","CTRL",
+             "TMZ","TMZ","TMZ","TMZ","TMZ","TMZ","TMZ","TMZ"],
+    "RESULT1": [18.61,35.6,9.2,11.5,38,26.2,48.5,47.9,6.94,4.7,18.5,3.8,17.25,5.5,32.7,6],
+    "RESULT2": [20.05,37.2,8.9,13.9,40.98,23.4,50.3,45.4,5.03,5.3,17.01,3.3,15.12,4.8,30.09,7.9],
+    "RESULT3": [19.12,34.1,10.4,12.34,43.23,27.6,45.6,40.8,8.2,5.8,20.04,4.5,19.54,7.5,28.5,5.1]
+}
+
+df = pd.DataFrame(data)
+df["HOUR"] = df["SAAT"].str.replace("H", "").astype(int)
+# Linear Regression ML Algorithm, supervised learning algorithm
+# predicting hour 72 as of hour 24 and  hour 48
+target_hour = 72
+def predict_for_group(group_name):
+  results={}
+  group_df=df[df["GRUP"]==group_name]
+  for result_col in ["RESULT1","RESULT2","RESULT3"]:
+    x= group_df[["HOUR"]]
+    y=group_df[result_col]
+    model= LinearRegression()
+    model.fit(x,y)
+    pred=model.predict(np.array([[target_hour]]))[0]
+    results[result_col]=pred
+  return results
+ctrl_pred= predict_for_group("CTRL")
+tmz_pred= predict_for_group("TMZ")
+print("CTRL PREDICTONS")
+print(ctrl_pred)
+print("TMZ PREDICTONS")
+print(tmz_pred)
